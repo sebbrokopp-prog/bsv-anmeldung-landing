@@ -1,78 +1,90 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <title>⚽ Fußballcamp Anmeldung – Bremer SV</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>⚽ BSV Fußballcamp Anmeldung</title>
   <style>
     body {
+      background: #00234a;
+      color: #ffffff;
       font-family: Arial, sans-serif;
       text-align: center;
-      margin-top: 15vh;
-      background: #0e2340;
-      color: white;
+      padding-top: 20vh;
     }
+
     h1 {
+      font-size: 2em;
+      margin-bottom: 10px;
       color: #76c3ff;
-      font-size: 2.2em;
     }
+
+    p {
+      margin: 0.5em 0;
+    }
+
     .loader {
-      margin: 20px auto;
-      border: 6px solid #f3f3f3;
+      margin: 30px auto;
+      border: 6px solid rgba(255, 255, 255, 0.2);
       border-top: 6px solid #76c3ff;
       border-radius: 50%;
-      width: 60px;
-      height: 60px;
+      width: 70px;
+      height: 70px;
       animation: spin 1s linear infinite;
     }
+
     @keyframes spin {
-      100% { transform: rotate(360deg); }
+      100% {
+        transform: rotate(360deg);
+      }
     }
-    p {
-      max-width: 420px;
-      margin: 10px auto;
+
+    #ready {
+      display: none;
+      margin-top: 20px;
     }
+
     a {
       color: #76c3ff;
-    }
-    #fallback {
-      display: none;
-      margin-top: 30px;
-      font-size: 1.1em;
+      text-decoration: underline;
+      font-weight: bold;
     }
   </style>
-  <script>
-    async function checkRender() {
-      const renderURL = "https://bsv-fussballschule-anmeldungen.onrender.com";
-      const maxWait = 20000; // 20 Sekunden
-      const start = Date.now();
 
-      async function ping() {
+  <script>
+    const renderURL = "https://bsv-fussballschule-anmeldungen.onrender.com";
+
+    async function waitForRender() {
+      const status = document.getElementById("status");
+      const ready = document.getElementById("ready");
+
+      status.textContent = "Das Anmeldetool wird gestartet – bitte einen Moment Geduld.";
+
+      while (true) {
         try {
-          const r = await fetch(renderURL, {mode: "no-cors"});
-          // Wenn Render wach ist → weiterleiten
+          const res = await fetch(renderURL + "/healthz", { mode: "no-cors" });
+          // Wenn Render bereit ist, leite um
           window.location.href = renderURL;
-        } catch (e) {
-          if (Date.now() - start < maxWait) {
-            setTimeout(ping, 4000);
-          } else {
-            document.getElementById("fallback").style.display = "block";
-          }
+          return;
+        } catch {
+          console.log("⏳ Render noch nicht erreichbar, versuche erneut...");
         }
+
+        // Kleine Pause, bevor der nächste Versuch startet
+        await new Promise((r) => setTimeout(r, 3000));
       }
-      ping();
     }
-    window.onload = checkRender;
+
+    window.onload = waitForRender;
   </script>
 </head>
-<body>
-  <h1>⚽ Fußballcamp Anmeldung</h1>
-  <p>Das Anmeldetool wird gestartet – bitte einen Moment Geduld.</p>
-  <div class="loader"></div>
 
-  <p id="fallback">
-    ⚽ Das Tool braucht etwas länger – 
-    <a href="https://bsv-fussballschule-anmeldungen.onrender.com">hier manuell öffnen</a>.
+<body>
+  <h1>⚽ BSV Fußballcamp Anmeldung</h1>
+  <p id="status">Das Anmeldetool wird gestartet – bitte einen Moment Geduld.</p>
+  <div class="loader"></div>
+  <p id="ready">
+    Das Tool ist jetzt verfügbar – <a href="https://bsv-fussballschule-anmeldungen.onrender.com">weiter zur Anmeldung</a>
   </p>
 </body>
 </html>
-
