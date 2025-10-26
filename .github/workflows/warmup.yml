@@ -1,0 +1,14 @@
+name: ☀️ Render Warm-Up
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"  # alle 10 Minuten
+  workflow_dispatch:  # manuell startbar
+
+jobs:
+  keep_render_awake:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🔄 Ping Render App
+        run: |
+          curl -s -o /dev/null -w "%{http_code}" https://bsv-fussballschule-anmeldungen.onrender.com
